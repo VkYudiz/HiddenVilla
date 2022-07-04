@@ -1,0 +1,22 @@
+﻿<h3>Grand Child Component</h3>
+
+@if(MessageForGrandChild != null || LuckyNumber != null)
+{
+    <div class="border mt-2">
+        <div class="p-lg-2 ml-2">
+            This is a message - @MessageForGrandChild
+        </div>
+        <div class="p-lg-2 ml-2">
+            This is a message - @LuckyNumber
+        </div>
+    </div>
+}
+
+@code {
+
+    [CascadingParameter(Name = "Message")]
+    public string MessageForGrandChild { get; set; }
+
+    [CascadingParameter(Name = "LuckyNumber")]
+    public string LuckyNumber { get; set; }
+}

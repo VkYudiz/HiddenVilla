@@ -1,0 +1,20 @@
+﻿@using HiddenVilla_Server.Model
+<div class="col-6" style="background-color:skyblue" @onclick="(args) => HotelDiv(args, Hotel.HotelName)">
+    <h3>Hotel - @Hotel.HotelId</h3>
+    <p>@Hotel.HotelName</p>
+    <p>@Hotel.Description</p>
+</div>
+
+@code {
+
+    [Parameter]
+    public BlazorHotel Hotel { get; set; }
+
+    [Parameter]
+    public EventCallback<string> SelectedHotel { get; set; }
+
+    protected async void HotelDiv(MouseEventArgs e, string hotelName)
+    {
+        await SelectedHotel.InvokeAsync((string)hotelName);
+    }
+}

@@ -1,0 +1,34 @@
+﻿@using HiddenVilla_Server.Model
+
+<div class="col-6" style="background-color:skyblue">
+    <input type="checkbox" @onchange="RoomCheckSelectedBox"/>
+            <h3>Room - @Room.Id</h3>
+            <p>@Room.RoomName</p>
+            <p>$@Room.Price</p>
+            <input type="checkbox" @bind-value="@Room.IsActive" @bind-value:event="oninput" checked="@(Room.IsActive ? "checked" : null)" />
+            <p>The room is @(Room.IsActive ? "active" : "inactive")</p>
+    @if (Room.IsActive)
+    {
+        foreach (var itemRoomProp in Room.RoomProp)
+        {
+                            <p>@itemRoomProp.Name</p>
+                            <p>@itemRoomProp.Value</p>
+        }
+    }
+            <EditDeleteButton IsAdmin=true></EditDeleteButton>
+        </div>
+
+@code {
+
+    [Parameter]
+    public BlazorRoom Room { get; set; } 
+
+    [Parameter]
+    public EventCallback<bool> RoomCheckBoxCallBack { get; set; }
+
+
+    protected async Task RoomCheckSelectedBox(ChangeEventArgs e)
+    {
+        await RoomCheckBoxCallBack.InvokeAsync((bool)e.Value);
+    }
+}

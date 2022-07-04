@@ -1,0 +1,38 @@
+﻿@page "/parentcomponent"
+
+<h3>Parent Child Relationship</h3>
+
+<ChildComponent Title="This is first child component">
+    This is first fragment of first child component
+</ChildComponent>
+
+
+<CascadingValue Value="@MessageForGrandChild" Name="Message">
+    <CascadingValue Value="@LuckyNumber" Name="LuckyNumber">
+        <ChildComponent ClickBtn="SetShowMessage" Title="This is first child component">
+        </ChildComponent>
+    </CascadingValue>
+</CascadingValue>
+
+<p><b>@ShowMessage</b></p>
+
+
+<AnotherComponent InitalAttributes="SetAttributes"></AnotherComponent>
+
+@code {
+    private string ShowMessage = "";
+    public string MessageForGrandChild { get; set; } = "Yup";
+    public string LuckyNumber { get; set; } = "45";
+
+    private void SetShowMessage(MouseEventArgs e)
+    {
+        ShowMessage = "Blazzing from the parent component";
+    }
+
+    protected Dictionary<string, object> SetAttributes { get; set; } = new Dictionary<string, object>
+    {
+        {"required", "required"},
+        {"placeholder", "Enter the room name"},
+        {"maxlength", 10}
+    };
+}

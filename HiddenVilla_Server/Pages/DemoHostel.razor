@@ -1,0 +1,92 @@
+﻿@page "/demohostel"
+@using HiddenVilla_Server.Model
+
+<h1>Demo Hostel</h1>
+
+<div class="row" style="background-color:cornsilk">
+    <span>Room selected count: @SelectedRoom</span>
+    @foreach (var item in RoomList)
+    {
+        <IndiviualRoom RoomCheckBoxCallBack="RoomCheckBox" Room="item"></IndiviualRoom>
+    }
+    @foreach (var item in HotelList)
+    {
+        <IndiviualHotel SelectedHotel="HotelSelectedDiv" Hotel="item"></IndiviualHotel>
+    }
+    <span>Selected hotel: @SelectedHotel</span>
+</div>
+@code {
+
+    public int SelectedRoom { get; set; } = 0;
+    public string SelectedHotel { get; set; }
+    List<BlazorRoom> RoomList = new List<BlazorRoom>();
+
+    List<BlazorHotel> HotelList = new List<BlazorHotel>();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitializedAsync();
+
+        RoomList.Add(new BlazorRoom
+            {
+                Id = 1,
+                Price = 499,
+                RoomName = "Villa suite",
+                IsActive = true,
+                RoomProp = new List<BlazorRoomProp>
+                {
+                    new BlazorRoomProp { Id = 1, Name = "Sq ft", Value = "100"},
+                    new BlazorRoomProp { Id = 2, Name = "Sec ft", Value = "33"}
+                }
+            });
+
+        RoomList.Add(new BlazorRoom
+            {
+                Id = 2,
+                Price = 299,
+                RoomName = "Villa suite 2",
+                IsActive = true,
+                RoomProp = new List<BlazorRoomProp>
+                {
+                    new BlazorRoomProp { Id = 1, Name = "Sq ft", Value = "100"},
+                    new BlazorRoomProp { Id = 2, Name = "Sec ft", Value = "33"}
+                }
+            });
+
+        RoomList.Add(new BlazorRoom
+            {
+                Id = 3,
+                Price = 399,
+                RoomName = "Villa suite 3",
+                IsActive = true,
+                RoomProp = new List<BlazorRoomProp>
+                {
+                    new BlazorRoomProp { Id = 1, Name = "Sq ft", Value = "100"},
+                    new BlazorRoomProp { Id = 2, Name = "Sec ft", Value = "33"}
+                }
+            });
+
+        HotelList.Add(new BlazorHotel
+            {
+                HotelId = 1,
+                HotelName = "Taj hotel",
+                Description = "Contain the 5 star model."
+            });
+    }
+
+    protected void RoomCheckBox(bool isSelected)
+    {
+        if (isSelected)
+            SelectedRoom++;
+        else
+            SelectedRoom--;
+    }
+
+    protected void HotelSelectedDiv(string hotel)
+    {
+        if (!string.IsNullOrWhiteSpace(hotel))
+            SelectedHotel = hotel;
+        else
+            SelectedHotel = string.Empty;
+    }
+}

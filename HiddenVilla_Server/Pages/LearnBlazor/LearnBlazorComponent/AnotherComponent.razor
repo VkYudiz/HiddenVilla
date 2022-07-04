@@ -1,0 +1,16 @@
+﻿<div>
+    <h4 class="text-primary pt-3">
+        Another component
+    </h4>
+    <input id="roomname" @attributes="InitalAttributes" class="form-control"/>
+</div>
+
+@code {
+    [Parameter]
+    public Dictionary<string, object> InitalAttributes { get; set; } = new Dictionary<string, object>
+    {
+        {"required", "required"},
+        {"placeholder", "Initial Text"},
+        {"maxlength", 5}
+    };
+}
