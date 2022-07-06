@@ -1,0 +1,77 @@
+﻿@page "/hotel-room-detail/{id}"
+@using Models
+@using Business.Repository.IRepository
+@inject IHotelRoomRepository HotelRoomRepository
+
+
+<div class="row mt-2 mb-5">
+    <h3 class="card-title text-info mb-3 ml-3">
+        @Title Hotel Room Id - @Id
+    </h3>
+    <div class="col-6">
+        <div class="card">
+            <div class="card-body">
+                <table class="table table-bordered table-hover">
+                    <tr>
+                        <td class="p-2">
+                            Name:
+                        </td>
+                        <td>
+                            @HotelRoomModel.Name
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="p-2">
+                            Occupancy:
+                        </td>
+                        <td>
+                            @HotelRoomModel.Occupancy
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="p-2">
+                            RegularRate:
+                        </td>
+                        <td>
+                            @HotelRoomModel.RegularRate
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="p-2">
+                            SqFt:
+                        </td>
+                        <td>
+                            @HotelRoomModel.SqFt
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="p-2">
+                            Details:
+                        </td>
+                        <td>
+                            @HotelRoomModel.Details
+                        </td>
+                    </tr>
+                </table>
+                <div>
+                    <a href="hotel-room-edit/@HotelRoomModel.Id" class="btn btn-primary">Edit</a>
+                    <NavLink href="hotel-room" class="btn btn-secondary">Back</NavLink>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    public string Title { get; set; } = "Detail";
+
+    [Parameter]
+    public string Id { get; set; }
+    public HotelRoomDTO HotelRoomModel { get; set; } = new HotelRoomDTO();
+
+    protected override async Task OnInitializedAsync()
+    {
+        HotelRoomModel = await HotelRoomRepository.GetHotelRoom(Convert.ToInt32(Id));
+    }
+}

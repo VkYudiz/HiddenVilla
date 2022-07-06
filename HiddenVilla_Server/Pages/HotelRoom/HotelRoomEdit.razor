@@ -1,0 +1,78 @@
+﻿@page "/hotel-room-edit/{id}"
+@using Models
+@using Business.Repository.IRepository
+@inject IHotelRoomRepository HotelRoomRepository
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JsRunTime
+
+<div class="row mt-2 mb-5">
+    <h3 class="card-title text-info mb-3 ml-3">
+        @Title Hotel Room Id - @Id
+    </h3>
+    <div class="col-6">
+        <div class="card">
+            <div class="card-body">
+                <EditForm Model="HotelRoomModel" OnValidSubmit="HandleHotelRoomUpsert" OnInvalidSubmit="InvalidHotelRoomUpdate">
+                    <DataAnnotationsValidator />
+                    <div class="form-group my-2">
+                        <label>Name</label>
+                        <InputText @bind-Value="HotelRoomModel.Name" class="form-control"></InputText>
+                        <ValidationMessage For="() => HotelRoomModel.Name" />
+                    </div>
+                    <div class="form-group my-2">
+                        <label>Occupancy</label>
+                        <InputNumber @bind-Value="HotelRoomModel.Occupancy" class="form-control"></InputNumber>
+                        <ValidationMessage For="() => HotelRoomModel.Occupancy" />
+                    </div>
+                    <div class="form-group my-2">
+                        <label>RegularRate</label>
+                        <InputNumber @bind-Value="HotelRoomModel.RegularRate" class="form-control"></InputNumber>
+                        <ValidationMessage For="() => HotelRoomModel.RegularRate" />
+                    </div>
+                    <div class="form-group my-2">
+                        <label>SqFt</label>
+                        <InputText @bind-Value="HotelRoomModel.SqFt" class="form-control"></InputText>
+                    </div>
+                    <div class="form-group my-2">
+                        <label>Details</label>
+                        <InputTextArea @bind-Value="HotelRoomModel.Details" class="form-control"></InputTextArea>
+                    </div>
+                    <div class="form-group my-2">
+                        <button class="btn btn-primary">@Title Room</button>
+                        <NavLink href="hotel-room" class="btn btn-secondary">Back</NavLink>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    public string Title { get; set; } = "Edit";
+
+    [Parameter]
+    public string Id { get; set; }
+    public HotelRoomDTO HotelRoomModel { get; set; } = new HotelRoomDTO();
+
+    protected override async Task OnInitializedAsync()
+    {
+        HotelRoomModel = await HotelRoomRepository.GetHotelRoom(Convert.ToInt32(Id));
+    }
+
+    protected async Task HandleHotelRoomUpsert()
+    {
+        var roomDetailsByName = await HotelRoomRepository.IsRoomUnique(HotelRoomModel.Name);
+
+        if (roomDetailsByName != null)
+            return;
+
+        var createdResult = await HotelRoomRepository.UpdateHotelRoom(Convert.ToInt32(Id), HotelRoomModel);
+        NavigationManager.NavigateTo("hotel-room");
+    }
+
+    protected async Task InvalidHotelRoomUpdate()
+    {
+        await JsRunTime.InvokeVoidAsync("ShowToastr", "error", "Invalid Form!");
+    }
+}

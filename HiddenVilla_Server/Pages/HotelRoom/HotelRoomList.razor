@@ -1,0 +1,90 @@
+﻿@page "/hotel-room"
+@using Business.Repository.IRepository
+@using Models
+@inject IHotelRoomRepository HotelRoomRepository
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+
+<div class="row mt-4">
+    <div class="col-8">
+        <h4 class="card-title text-info">Hotel Room's</h4>
+    </div>
+    <div class="col-3 offset-1">
+        <NavLink href="hotel-room/create" class="btn btn-info form-control">Add New Room</NavLink>
+    </div>
+</div>
+<div class="row mt-4">
+    <div class="col-12">
+        @if(IsDeleteBtnShow)
+        {
+            <HotelRoomDelete Id = "@DeleteHotelId" @ref="hotelRoomDelete" HotelRooms="GetHotelRoomList"></HotelRoomDelete>
+        }
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Occupancy</th>
+                    <th>RegularRate</th>
+                    <th>SqFt</th>
+                    <th>Details</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (HotelRooms.Any())
+                {
+                    foreach (var room in HotelRooms)
+                    {
+                        DeleteHotelId = room.Id.ToString();
+                        <tr>
+                            <td>@room.Name</td>
+                            <td>@room.Occupancy</td>
+                            <td>@room.RegularRate</td>
+                            <td>@room.SqFt</td>
+                            <td>@room.Details</td>
+                            <td>
+                                @*<a href="hotel-room-edit/@room.Id" class="btn btn-primary"><i class="fas fa-edit"></i></a>*@
+                                <NavLink href="@($"hotel-room-edit/{@room.Id}")" class="btn btn-primary"><i class="fa fa-edit"></i></NavLink>
+                                <a href="hotel-room-detail/@room.Id" class="btn btn-info"><i class="fa fa-eye"></i></a>
+                                <NavLink class="btn btn-danger" @onclick="deleteClick"><i class="fa fa-trash"></i></NavLink>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6" class="text-center">No records found</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+@code {
+
+    private HotelRoomDelete hotelRoomDelete;
+    protected bool IsDeleteBtnShow { get; set; } = false;
+    protected string DeleteHotelId { get; set; }
+    private IEnumerable<HotelRoomDTO> HotelRooms { get; set; } = new List<HotelRoomDTO>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        HotelRooms = await HotelRoomRepository.GetAllHotelRooms();
+    }
+
+    protected void deleteClick()
+    {
+        IsDeleteBtnShow = true;
+        if(hotelRoomDelete != null)
+            hotelRoomDelete.Show();
+    }
+
+    protected void GetHotelRoomList(IEnumerable<HotelRoomDTO> hotelRooms)
+    {
+        HotelRooms = hotelRooms;
+    }
+}

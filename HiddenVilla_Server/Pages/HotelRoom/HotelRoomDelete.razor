@@ -1,0 +1,88 @@
+﻿@using Models
+@using Business.Repository.IRepository
+@inject IHotelRoomRepository HotelRoomRepository
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JsRunTime
+
+@if (ShowConfirmation)
+{
+    <div class="modal fade show d-block" id="exampleModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">@ConfirmationTitle</h5>
+                </div>
+                <div class="modal-body">
+                    @ConfirmationMessage
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                        @onclick="() => OnConfirmationChange(false)">
+                        Cancel
+                    </button>
+                    <button type="button" class="btn btn-danger"
+                        @onclick="() => OnConfirmationChange(true)">
+                        Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+
+    protected bool ShowConfirmation { get; set; } = false;
+
+    [Parameter]
+    public EventCallback<IEnumerable<HotelRoomDTO>> HotelRooms { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Show();
+    }
+
+    private async Task OnConfirmationChange(bool value)
+    {
+        ShowConfirmation = false;
+        if (!string.IsNullOrWhiteSpace(Id) && Id.All(char.IsDigit) && value)
+        {
+            try
+            {
+                await HotelRoomRepository.DeleteHotelRoom(Convert.ToInt32(Id));
+                var hotelRooms = await HotelRoomRepository.GetAllHotelRooms();
+                HotelRoomList(hotelRooms);
+                DeleteSuccess();
+            }
+            catch (Exception e)
+            {
+                DeleteSuccess(true);
+            }
+        }
+    }
+
+    private async Task HotelRoomList(IEnumerable<HotelRoomDTO> hotelRooms)
+    {
+        await HotelRooms.InvokeAsync((IEnumerable<HotelRoomDTO>)hotelRooms);
+    }
+
+    private async Task DeleteSuccess(bool isError = false)
+    {
+        if(isError)
+            await JsRunTime.InvokeVoidAsync("ShowToastr", "error", "Something was wrong!");
+        else
+            await JsRunTime.InvokeVoidAsync("ShowToastr", "success", "Successfully deleted!");
+    }
+
+    public void Show()
+    {
+        ShowConfirmation = true;
+        StateHasChanged();
+    }
+
+    public string ConfirmationTitle { get; set; } = "Confirm Delete";
+
+    public string ConfirmationMessage { get; set; } = "Are you sure you want to delete";
+}
