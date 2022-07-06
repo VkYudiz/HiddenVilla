@@ -16,9 +16,9 @@
 </div>
 <div class="row mt-4">
     <div class="col-12">
-        @if(IsDeleteBtnShow)
+        @if (IsDeleteBtnShow)
         {
-            <HotelRoomDelete Id = "@DeleteHotelId" @ref="hotelRoomDelete" HotelRooms="GetHotelRoomList"></HotelRoomDelete>
+            <HotelRoomDelete Id="@DeleteHotelId" @ref="hotelRoomDelete" HotelRooms="GetHotelRoomList"></HotelRoomDelete>
         }
         <table class="table table-bordered table-hover">
             <thead>
@@ -45,7 +45,7 @@
                             <td>@room.Details</td>
                             <td>
                                 @*<a href="hotel-room-edit/@room.Id" class="btn btn-primary"><i class="fas fa-edit"></i></a>*@
-                                <NavLink href="@($"hotel-room-edit/{@room.Id}")" class="btn btn-primary"><i class="fa fa-edit"></i></NavLink>
+                                <NavLink href="@($"hotel-room/edit/{@room.Id}")" class="btn btn-primary"><i class="fa fa-edit"></i></NavLink>
                                 <a href="hotel-room-detail/@room.Id" class="btn btn-info"><i class="fa fa-eye"></i></a>
                                 <NavLink class="btn btn-danger" @onclick="deleteClick"><i class="fa fa-trash"></i></NavLink>
                             </td>
@@ -70,6 +70,7 @@
     protected bool IsDeleteBtnShow { get; set; } = false;
     protected string DeleteHotelId { get; set; }
     private IEnumerable<HotelRoomDTO> HotelRooms { get; set; } = new List<HotelRoomDTO>();
+    public BlazoredTextEditor QuillHtml { get; set; } = new BlazoredTextEditor();
 
     protected override async Task OnInitializedAsync()
     {
@@ -79,12 +80,38 @@
     protected void deleteClick()
     {
         IsDeleteBtnShow = true;
-        if(hotelRoomDelete != null)
+        if (hotelRoomDelete != null)
             hotelRoomDelete.Show();
     }
 
     protected void GetHotelRoomList(IEnumerable<HotelRoomDTO> hotelRooms)
     {
         HotelRooms = hotelRooms;
+    }
+
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            return;
+        bool loading = true;
+        while (loading)
+        {
+            try
+            {
+                foreach (var room in HotelRooms)
+                {
+                    if (!string.IsNullOrEmpty(room.Details))
+                    {
+                        await this.QuillHtml.LoadHTMLContent(room.Details);
+                    }
+                }
+                loading = false;
+            }
+            catch
+            {
+                await Task.Delay(10);
+                loading = true;
+            }
+        }
     }
 }
